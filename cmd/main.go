@@ -4,6 +4,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/sergiorra/space-game-go/internal"
 	"log"
+	"time"
 
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -38,11 +39,30 @@ func run() {
 		log.Fatal(err)
 	}
 
+	direction := spacegame.Idle
 	world.Draw(win)
+
+	last := time.Now()
 
 	// infinite loop
 	for !win.Closed() {
+		dt := time.Since(last).Seconds()
+		last = time.Now()
+
+		if win.Pressed(pixelgl.KeyLeft) {
+			direction = spacegame.LeftDirection
+		}
+
+		if win.Pressed(pixelgl.KeyRight) {
+			direction = spacegame.RightDirection
+		}
+
+		player.Update(direction, dt)
+
+		world.Draw(win)
 		player.Draw(win)
+		direction = spacegame.Idle
+
 		win.Update()
 	}
 }
