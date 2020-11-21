@@ -25,6 +25,10 @@ func (w *World) AddBackground(path string) error {
 	return nil
 }
 
+func (w World) Bounds() pixel.Rect {
+	return pixel.R(0, 0, w.width, w.height)
+}
+
 func (w World) Draw(t pixel.Target) {
 	spriteBg := pixel.NewSprite(w.bg, w.bg.Bounds())
 	bgBatch := pixel.NewBatch(&pixel.TrianglesData{}, w.bg)

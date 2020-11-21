@@ -33,10 +33,16 @@ func run() {
 		log.Fatal(err)
 	}
 
+	player, err := spacegame.NewPlayer("resources/player.png", 5, world)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	world.Draw(win)
 
 	// infinite loop
 	for !win.Closed() {
+		player.Draw(win)
 		win.Update()
 	}
 }
