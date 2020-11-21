@@ -42,6 +42,7 @@ func (l *Laser) NewLaser(pos pixel.Vec) *Laser {
 		sprite:    spr,
 		isVisible: true,
 		world:     l.world,
+		sfxPath:   l.sfxPath,
 	}
 }
 
