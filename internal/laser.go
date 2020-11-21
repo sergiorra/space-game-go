@@ -19,6 +19,7 @@ type Laser struct {
 	sfxPath   string
 }
 
+// NewBaseLaser initializes a new base laser with all common properties
 func NewBaseLaser(path, sfxPath string, vel float64, world *World) (*Laser, error) {
 	pic, err := loadPicture(path)
 	if err != nil {
@@ -33,9 +34,9 @@ func NewBaseLaser(path, sfxPath string, vel float64, world *World) (*Laser, erro
 	}, nil
 }
 
+// NewLaser initializes a new laser with common properties and all specific properties
 func (l *Laser) NewLaser(pos pixel.Vec) *Laser {
 	spr := pixel.NewSprite(l.pic, l.pic.Bounds())
-
 	return &Laser{
 		pos:       &pos,
 		vel:       l.vel,
@@ -46,12 +47,14 @@ func (l *Laser) NewLaser(pos pixel.Vec) *Laser {
 	}
 }
 
+// Draw draws laser if it is visible
 func (l Laser) Draw(t pixel.Target) {
 	if l.isVisible == true {
 		l.sprite.Draw(t, pixel.IM.Moved(*l.pos))
 	}
 }
 
+// Update updates laser position and visibility
 func (l *Laser) Update() {
 	l.pos.Y += l.vel
 	if l.pos.Y > l.world.height {
@@ -59,6 +62,7 @@ func (l *Laser) Update() {
 	}
 }
 
+// Shoot loads shoot sound and plays it
 func (l Laser) Shoot() {
 	sfx, err := loadSound(l.sfxPath)
 	if err != nil {

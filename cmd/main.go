@@ -39,9 +39,11 @@ func run() {
 		log.Fatal(err)
 	}
 
+	world.Draw(win)
+
+	// initial player direction and action
 	direction := spacegame.Idle
 	action := spacegame.NoneAction
-	world.Draw(win)
 
 	last := time.Now()
 
@@ -50,6 +52,7 @@ func run() {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 
+		// refresh world window
 		world.Draw(win)
 
 		if win.Pressed(pixelgl.KeyLeft) {
@@ -62,8 +65,10 @@ func run() {
 			action = spacegame.ShootAction
 		}
 
+		// updates player state and draw it
 		player.Update(direction, action, dt)
 		player.Draw(win)
+
 		direction = spacegame.Idle
 		action = spacegame.NoneAction
 
