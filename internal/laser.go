@@ -1,6 +1,13 @@
 package spacegame
 
-import "github.com/faiface/pixel"
+import (
+	"log"
+	"time"
+
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
+	"github.com/faiface/pixel"
+)
 
 type Laser struct {
 	pic       pixel.Picture
@@ -9,9 +16,10 @@ type Laser struct {
 	isVisible bool
 	world     *World
 	sprite    *pixel.Sprite
+	sfxPath   string
 }
 
-func NewBaseLaser(path string, vel float64, world *World) (*Laser, error) {
+func NewBaseLaser(path, sfxPath string, vel float64, world *World) (*Laser, error) {
 	pic, err := loadPicture(path)
 	if err != nil {
 		return nil, err
@@ -21,6 +29,7 @@ func NewBaseLaser(path string, vel float64, world *World) (*Laser, error) {
 		pic:     pic,
 		vel:     vel,
 		world:   world,
+		sfxPath: sfxPath,
 	}, nil
 }
 
@@ -47,4 +56,21 @@ func (l *Laser) Update() {
 	if l.pos.Y > l.world.height {
 		l.isVisible = false
 	}
+}
+
+func (l Laser) Shoot() {
+	sfx, err := loadSound(l.sfxPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	speaker.Init(sfx.format.SampleRate, sfx.format.SampleRate.N(time.Second/10))
+	defer sfx.streamer.Close()
+
+	done := make(chan bool)
+	speaker.Play(beep.Seq(sfx.streamer, beep.Callback(func() {
+		done <- true
+	})))
+
+	<-done
 }

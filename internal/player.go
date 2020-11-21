@@ -1,6 +1,8 @@
 package spacegame
 
-import "github.com/faiface/pixel"
+import (
+	"github.com/faiface/pixel"
+)
 
 type Player struct {
 	direction Direction
@@ -37,7 +39,7 @@ func NewPlayer(path string, life int, world *World) (*Player, error) {
 	initialPos := pixel.V(world.Bounds().W()/2, spr.Frame().H())
 
 	// Initialize the laser for the player
-	l, err := NewBaseLaser("resources/laser.png", 270.0, world)
+	l, err := NewBaseLaser("resources/laser.png", "resources/sfx/pew.wav", 270.0, world)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +98,7 @@ func (p *Player) shoot(action Action, dt float64) {
 	}
 	if action == ShootAction && laserDelay <= 0 {
 		l := p.laser.NewLaser(*p.pos)
+		go l.Shoot()
 		l.vel *= dt
 
 		p.lasers[NewULID()] = l
