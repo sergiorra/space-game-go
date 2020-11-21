@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/faiface/pixel"
+	"github.com/sergiorra/space-game-go/internal"
 	"log"
 
 	"github.com/faiface/pixel/pixelgl"
-	"golang.org/x/image/colornames"
 )
 
 const (
@@ -28,7 +28,12 @@ func run() {
 		log.Fatal(err)
 	}
 
-	win.Clear(colornames.Aqua)
+	world := spacegame.NewWorld(windowWidth, windowHeight)
+	if err := world.AddBackground("resources/background.png"); err != nil {
+		log.Fatal(err)
+	}
+
+	world.Draw(win)
 
 	// infinite loop
 	for !win.Closed() {
