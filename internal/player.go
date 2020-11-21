@@ -1,6 +1,8 @@
 package spacegame
 
-import "github.com/faiface/pixel"
+import (
+	"github.com/faiface/pixel"
+)
 
 type Player struct {
 	direction Direction
@@ -26,8 +28,8 @@ var (
 	laserDelay = rechargeTime
 )
 
+// NewPlayer initializes a new player with all its properties
 func NewPlayer(path string, life int, world *World) (*Player, error) {
-
 	// Initialize sprite to use with the player
 	pic, err := loadPicture(path)
 	if err != nil {
@@ -37,7 +39,7 @@ func NewPlayer(path string, life int, world *World) (*Player, error) {
 	initialPos := pixel.V(world.Bounds().W()/2, spr.Frame().H())
 
 	// Initialize the laser for the player
-	l, err := NewBaseLaser("resources/laser.png", 270.0, world)
+	l, err := NewBaseLaser(laserImg, laserSfx, laserVel, world)
 	if err != nil {
 		return nil, err
 	}
@@ -53,6 +55,11 @@ func NewPlayer(path string, life int, world *World) (*Player, error) {
 	}, nil
 }
 
+func (p Player) Frame() pixel.Rect {
+	return p.sprite.Frame()
+}
+
+// Draw draws player in its position and its lasers
 func (p Player) Draw(t pixel.Target) {
 	p.sprite.Draw(t, pixel.IM.Moved(*p.pos))
 	for _, l := range p.lasers {
@@ -60,6 +67,7 @@ func (p Player) Draw(t pixel.Target) {
 	}
 }
 
+// Update updates player state and its lasers
 func (p *Player) Update(direction Direction, action Action, dt float64) {
 	p.direction = direction
 	p.move(direction, dt)
@@ -75,6 +83,7 @@ func (p *Player) Update(direction Direction, action Action, dt float64) {
 	}
 }
 
+// move updates player position
 func (p *Player) move(direction Direction, dt float64) {
 	switch direction {
 	case LeftDirection:
@@ -90,12 +99,14 @@ func (p *Player) move(direction Direction, dt float64) {
 	}
 }
 
+// shoot creates new laser with its properties and sound
 func (p *Player) shoot(action Action, dt float64) {
 	if laserDelay >= 0 {
 		laserDelay--
 	}
 	if action == ShootAction && laserDelay <= 0 {
 		l := p.laser.NewLaser(*p.pos)
+		go l.Shoot()
 		l.vel *= dt
 
 		p.lasers[NewULID()] = l
