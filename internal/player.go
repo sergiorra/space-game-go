@@ -32,3 +32,20 @@ func NewPlayer(path string, life int, world *World) (*Player, error) {
 func (p Player) Draw(t pixel.Target) {
 	p.sprite.Draw(t, pixel.IM.Moved(*p.pos))
 }
+
+func (p *Player) Update(direction Direction, dt float64) {
+	p.direction = direction
+
+	switch direction {
+	case LeftDirection:
+		newX := p.pos.X - (p.vel * dt)
+		if newX > 0 {
+			p.pos.X = newX
+		}
+	case RightDirection:
+		newX := p.pos.X + (p.vel * dt)
+		if newX < p.world.Bounds().W() {
+			p.pos.X = newX
+		}
+	}
+}
